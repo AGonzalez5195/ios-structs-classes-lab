@@ -14,18 +14,27 @@ class Giant {
  let homePlanet: String = "Earth"
 }
 
-let fred = Giant()
+let fred = Giant() //Fred is an instance of Giant. If you make another variable, George, and assign it the value of fred, changing fred at any point later on would also modify George due to the logic behind reference types.
 ```
 
 Will these three lines of code run? If not, why not?
 
 ```swift
-fred.name = "Brick"
-fred.weight = 999.2
-fred.homePlanet = "Mars"
+fred.name = "Brick" //Yes
+fred.weight = 999.2 // Yes
+fred.homePlanet = "Mars" //No. homePlanet is a constant so is not mutable.
 ```
 
 Fix the class definition for `Giant` in the space below so that it **does** work:
+```
+class Giant {
+var name: String = "Fred"
+var weight: Double = 340.0
+var homePlanet: String = "Earth" //This is the changed line. let > var.
+}
+
+let fred = Giant()
+```
 
 
 ## Question 2
@@ -40,16 +49,23 @@ struct Alien {
 }
 let bilbo = Alien(name: "Bilbo", height: 1.67, homePlanet: "Venus")
 ```
+```
+var bilbo = Alien(name: "Bilbo", height: 1.67, homePlanet: "Venus") is an instance of Alien. If you make another variable, Shmalien, and assign it the value of Alien, changing Alien at any point later on would NOT modify Shmalien due to the rules of a struct type.
 
+```
 Will these three lines of code run? If so, why not?
 
 ```swift
-bilbo.name = "Jake"
-bilbo.height = 1.42
-bilbo.homePlanet = "Saturn"
+bilbo.name = "Jake" //No
+bilbo.height = 1.42 //No
+bilbo.homePlanet = "Saturn" //No
+
+//Reason why none work is because 'bilbo' is a constant. 
 ```
 
 Change the declaration of `bilbo` so that the above three lines of code **do** work:
+
+``var bilbo = Alien(name: "Bilbo", height: 1.67, homePlanet: "Venus") ``
 
 
 ## Question 3
@@ -64,7 +80,9 @@ jason.name = "Jason"
 ```
 
 What will the value of `edgar.name` be after those three lines of code are run? What will the value of `jason.name` be? Why?
-
+```
+The value of both edgar.name and jason.name will be "Jason". This is because a reference type object, which class is, both point to the original value instead of creating a new value when you set a variable equal to an instance. So modifying edgar or jason will modify both edgar and jason since jason = edgar.
+```
 
 ## Question 4
 
@@ -78,6 +96,11 @@ charlesFromJupiter.homePlanet = "Jupiter"
 
 What will the value of `charles.homePlanet` be after the above code run? What about the value of `charlesFromJupiter.homePlanet`? Why?
 
+```
+Charles will have the same as it did when it was declared ("Pluto"). Becaue a struct is a value type object, changing the value of a variable "forked" from it will not modify the original value since it's saved in a different space in memory.
+
+charlesFromJupiter.homeplanet //will have the same value it was given when it itself was assigned. "Jupiter"
+```
 
 ## Question 5
 
@@ -99,8 +122,25 @@ struct BankAccount {
 ```
 
 Does this code work? Why or why not?
-
+```
+No. Because if it did, the next question wouldn't ask us to fix it.  
+Also, balance isn't mutable unless the function is written as a mutating func
+```
 Fix the `BankAccount` struct so it does work.
+```
+struct BankAccount {
+    var owner: String
+    var balance: Double
+
+mutating func deposit(_ amount: Double) { //Must be mutating because bal
+    balance += amount
+    }
+
+mutating func withdraw(_ amount: Double) {
+    balance -= amount
+    }
+}
+```
 
 Given the code below (which should incorporate any fixes you made):
 
@@ -112,6 +152,10 @@ joeAccount.withdraw(50.0)
 
 What will the value of `joeAccount.balance` be after the above code runs? What about the value of `joeOtherAccount.balance`? Why?
 
+```
+joeAccount balance will be $50.0 and joeOtherAccount.balance will be $100.0. This is BankAccount is a value type (struct) so when joeOtherAccount was declared, it can be thought of as a snapshot of joeAccount in that moment. In other words, it's saved to a different space in memory and so modifying joeAccount later on will not modify joeOtherAccount.
+```
+
 
 ## Question 6
 
@@ -120,6 +164,28 @@ a. Write a struct called `Person` that has 3 properties of type `String`: a firs
 
 b. Write a method in `Person` called `fullName` that will return a formatted string of an instance's full name. Call this method on both the instances you created in part a.
 
+```
+struct Person {
+let firstName: String
+let middleName: String?
+let lastName: String
+
+func fullName () -> String {
+    if let middleName = middleName { //This unwraps the middle name if it exists and interpolates the name constants into the string.
+        return "\(firstName) \(middleName) \(lastName)"
+    } else {
+        return "\(firstName) \(lastName)"
+        }
+    }
+}
+    
+var person1 = Person(firstName: "Nicholas", middleName: nil, lastName: "White")
+var person2 = Person(firstName: "Timothy", middleName: "Cornelius", lastName: "Locke")
+
+
+print(person2.fullName())
+print(person1.fullName())
+```
 
 ## Question 7
 
@@ -128,6 +194,27 @@ a. Create a struct called `Book` that has properties `title`, `author` and `rati
 
 b. Add a method to `Book` called `isGood` that returns `true` if its rating is greater than or equal to 7
 
+```
+struct Book {
+var title: String
+var author: String
+var rating: Double
+
+func isGood () -> Bool {
+if rating >= 7.0 {
+return true
+} else {
+return false
+}
+}
+}
+
+
+let crappyBook = Book(title: "Twilight" , author: "Stephanie Meyer" , rating: 0.0)
+let goodBook = Book(title: "Breakfast of Champions", author: "Kurt Vonnegut", rating: 10.0)
+
+goodBook.isGood()
+```
 
 ## Question 8
 
@@ -141,54 +228,56 @@ Work through the following tasks one by one, in order. Each time, add to the `Do
 
 a. Give `Dog` four properties, all with default values: `name (string), breed (string), mood (string), and hungry (boolean)`.
 
-```swift
-var dog1 = Dog()
-dog1.name //returns "dog"
-dog1.breed //returns "unknown"
-dog1.mood //returns "calm"
-dog1.hungry //returns false
-```
-
 b. Add an instance method called `playFetch()`. It should set the dog's `hungry` property to `true`, set its mood property to `playful`, and print "Ruff!"
 
-```swift
-var dog2 = Dog()
-dog2.name = "Rhett"
-dog2.breed = "English Setter"
-dog2.mood = "excited"
-dog2.hungry = false
 
-dog2.playFetch() //prints "Ruff!"
-dog2.hungry //returns true
-dog2.mood //returns "playful"
-```
 
 c. Add an instance method called `feed()`. If the dog is hungry, it should set `hungry` to `false` and print "Woof!" If the dog is not hungry, it should print "The dog doesn't look hungry"
 
-```swift
-var dog3 = Dog()
-dog3.name = "Partner"
-dog3.breed = "Golden Retriever"
-dog3.mood = "thoughtful"
-dog3.hungry = true
-
-dog3.feed() //prints "Woof!"
-dog3.hungry //returns false
-```
 
 d. Add an instance method called `toString` that returns a `String` type description of the dog:
 
 ```swift
-var dog4 = Dog()
-dog4.name = "Rascal"
-dog4.breed = "Golden Retriever"
-dog4.mood = "feeling pawesome"
-dog4.hungry = true
-print(dog4.toString())
-//prints:
-//Name: Rascal
-//Breed: Golden Retriever
-//Mood: feeling pawesome
+class Dog {
+
+var name: String
+var breed: String
+var mood: String
+var hungry: Bool
+init (name: String, breed: String, mood: String, hungry: Bool) {
+self.name = name
+self.breed = breed
+self.mood = mood
+self.hungry = hungry
+
+}
+func playFetch() {
+hungry = true
+mood = "playful"
+print("Ruff!")
+}
+func feed() {
+hungry = false
+print("Woof!")
+if hungry == false {
+print("The dog doesn't look hungry...")
+}
+}
+func toString () -> String {
+return """
+Name: \(name)
+Breed: \(breed)
+Mood: \(mood)
+"""
+}
+}
+
+var dog1 = Dog(name: "Chaucer", breed: "Affenpinscher", mood: "weird", hungry: false)
+dog1.playFetch()
+dog1.feed()
+dog1.toString()
+print(dog1.toString())
+
 ```
 
 e. Add a type property called `count` that keeps track of how many dogs have been created so far.
@@ -219,6 +308,41 @@ tenDegreesCelsius.getFahrenheitTemp() //returns 50.0
 
 c. Give the `Celsius` struct a method called `isBelowFreezing` that returns a `Bool` (true if the temperature is below freezing).
 
+```
+struct FreezingPoint {
+let Celsius = 0
+let Farenheit = 32
+let Kelvin = 273
+}
+
+struct Celsius {
+let celsius: Double
+
+func getFahrenheitTemp() -> Double {
+return 1.8 * celsius + 32
+}
+func getKelvinTemp () -> Double {
+return celsius + 273
+}
+func isBelowFreezing () -> Bool {
+if celsius < 0 {
+return true
+} else {
+return false
+}
+
+}
+}
+
+
+var tenDegreesCelsius = Celsius(celsius: 10.0)
+tenDegreesCelsius.celsius
+tenDegreesCelsius.getKelvinTemp()
+tenDegreesCelsius.getFahrenheitTemp()
+tenDegreesCelsius.isBelowFreezing()
+
+```
+
 
 ## Question 10
 
@@ -234,8 +358,27 @@ let colorDictArray: [[String: Double]] = [["red": 1.0, "green": 0.0, "blue": 0.0
  ["red": 0.2, "green": 0.2, "blue": 0.5],
  ["red": 0.5, "green": 0.1, "blue": 0.9],]
 ```
+```
+struct RGBColor {
+var red: Double
+var green: Double
+var blue: Double
+}
 
+let colorDictArray: [[String: Double]] = [["red": 1.0, "green": 0.0, "blue": 0.0],
+["red": 0.0, "green": 1.0, "blue": 0.0],
+["red": 0.0, "green": 0.0, "blue": 1.0],
+["red": 0.6, "green": 0.9, "blue": 0.0],
+["red": 0.2, "green": 0.2, "blue": 0.5],
+["red": 0.5, "green": 0.1, "blue": 0.9],]
 
+var rgbArray = [RGBColor]()
+
+for dict in colorDictArray {
+rgbArray.append(RGBColor(red: dict["red"]!, green: dict["green"]!, blue: dict["blue"]!))
+}
+print(rgbArray[0])
+```
 ## Question 11
 
 a. Create a struct called `Movie` that has properties for `name` (`String`), `year` (`Int`), `genre` (`String`), `cast` (`[String]`), and `description` (`String`). Create an instance of your `Movie` class
@@ -243,6 +386,25 @@ a. Create a struct called `Movie` that has properties for `name` (`String`), `ye
 b. Create an instance method inside `Movie` called `blurb` that returns a formatted string describing the movie.
 
 Ex: "Borat came out in 2006. It was an odd film starring Sacha Baron Cohen as a man named Borat who was visiting America from Kazakhstan."
+
+```
+struct Movie {
+let name: String
+let year: Int
+let genre: String
+let cast: [String]
+let description: String
+
+func blurb () -> String {
+return "\(name), released in \(year) was a true masterpiece of cinema. Starring the enigmatic \([cast[0]].joined()) as Johnny and \([cast[1]].joined()) as his best friend, Mark, \(description)."
+}
+}
+
+var myMovie = Movie(name: "The Room", year: 2003, genre: "Drama", cast: ["Tommy Wiseau", "Greg Sestero", "Juliette Danielle", "Philip Haldiman"], description: "this movie can't even be described, honestly")
+
+print(myMovie.blurb())
+
+```
 
 
 ## Question 12
